@@ -1,26 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: #10141a;
+  --color-surface-dim: #10141a;
+  --color-surface-bright: #353940;
+  --color-surface-container-lowest: #0a0e14;
+  --color-surface-container-low: #181c22;
+  --color-surface-container: #1c2026;
+  --color-surface-container-high: #262a31;
+  --color-surface-container-highest: #31353c;
+  --color-surface-variant: #31353c;
+  --color-surface-tint: #00dbe7;
+
+  --color-on-surface: #dfe2eb;
+  --color-on-surface-variant: #b9cacb;
+  --color-on-background: #dfe2eb;
+  --color-background: #10141a;
+
+  --color-primary: #e1fdff;
+  --color-primary-container: #00f2ff;
+  --color-primary-fixed: #74f5ff;
+  --color-primary-fixed-dim: #00dbe7;
+  --color-on-primary: #00363a;
+  --color-on-primary-container: #006a71;
+  --color-on-primary-fixed: #002022;
+  --color-on-primary-fixed-variant: #004f54;
+  --color-inverse-primary: #00696f;
+
+  --color-secondary: #bcc7de;
+  --color-secondary-container: #3e495d;
+  --color-secondary-fixed: #d8e3fb;
+  --color-secondary-fixed-dim: #bcc7de;
+  --color-on-secondary: #263143;
+  --color-on-secondary-container: #aeb9d0;
+  --color-on-secondary-fixed: #111c2d;
+  --color-on-secondary-fixed-variant: #3c475a;
+
+  --color-tertiary: #fff6e4;
+  --color-tertiary-container: #fed83a;
+  --color-tertiary-fixed: #ffe173;
+  --color-tertiary-fixed-dim: #e8c423;
+  --color-on-tertiary: #3b2f00;
+  --color-on-tertiary-container: #725e00;
+  --color-on-tertiary-fixed: #221b00;
+  --color-on-tertiary-fixed-variant: #554500;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  --color-outline: #849495;
+  --color-outline-variant: #3a494b;
+  --color-inverse-surface: #dfe2eb;
+  --color-inverse-on-surface: #2d3137;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-inter: 'Inter', sans-serif;
+  --font-jetbrains: 'JetBrains Mono', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ---- Base ---- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0e14;
+  color: #dfe2eb;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: #00f2ff;
+  color: #006a71;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0e14; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a494b; }
+
+/* ---- Grid Pattern Background ---- */
+.bg-grid {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, #1e293b 1px, transparent 1px),
+    linear-gradient(to bottom, #1e293b 1px, transparent 1px);
+}
+
+/* ---- Glow Effects ---- */
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+.primary-glow {
+  box-shadow: 0 0 12px rgba(0, 242, 255, 0.2);
+}
+.b-grade-glow {
+  box-shadow: 0 0 40px rgba(254, 216, 58, 0.15);
+}
+.scan-input:focus {
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+  outline: none;
+}
+
+/* ---- Bento Border ---- */
+.bento-border {
+  border: 1px solid #1e293b;
+}
+
+/* ---- Animations ---- */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ring-pulse {
+  0% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.4); }
+  70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 20px rgba(0, 242, 255, 0); }
+  100% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); }
+}
+.scanner-ring {
+  animation: ring-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scan-move {
+  from { background-position: 0 -200px; }
+  to { background-position: 0 100vh; }
+}
+.scanning-gradient {
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 219, 231, 0.1) 50%, transparent 100%);
+  background-size: 100% 200px;
+  animation: scan-move 3s linear infinite;
+}
+
+/* ---- Finding card hover ---- */
+.finding-card:hover {
+  background-color: #1e293b;
+}
+
+/* ---- Report Canvas (Light Theme for PDF) ---- */
+.report-canvas {
+  background-color: white;
+  color: #1a1a1a;
+  box-shadow: 0 0 40px rgba(0,0,0,0.3);
+}
+
+@media print {
+  body { background: white; }
+  .no-print { display: none; }
+  .report-canvas { box-shadow: none; margin: 0; width: 100%; }
+}
+
+/* ---- Check item transitions ---- */
+.check-item {
+  transition: all 0.4s ease-in-out;
+}
+.check-item.active {
+  color: #e1fdff;
+  background: rgba(0, 219, 231, 0.05);
 }
