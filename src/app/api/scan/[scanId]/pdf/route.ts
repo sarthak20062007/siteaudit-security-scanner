@@ -47,7 +47,7 @@ export async function GET(
 
     await browser.close();
 
-    return new Response(pdfBuffer, {
+    return new Response(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="SiteAudit_Report_${scanId.substring(0, 8)}.pdf"`,

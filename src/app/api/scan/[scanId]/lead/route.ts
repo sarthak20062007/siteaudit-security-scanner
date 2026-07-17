@@ -25,7 +25,7 @@ export async function POST(
     // Validate payload
     const result = leadSchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
     // Create lead in database

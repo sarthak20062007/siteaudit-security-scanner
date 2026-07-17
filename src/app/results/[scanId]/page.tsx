@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Code,
   X,
-  Loader2
+  Loader2,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import TopNav, { dashboardLinks } from '@/components/TopNav';

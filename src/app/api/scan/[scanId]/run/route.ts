@@ -11,6 +11,7 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ scanId: string }> }
 ) {
+  const { scanId } = await params;
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       return NextResponse.json(
@@ -18,8 +19,6 @@ export async function GET(
         { status: 500 }
       );
     }
-
-    const { scanId } = await params;
 
     // 1. Fetch scan
     const { data: scan, error: fetchError } = await supabaseServer
@@ -107,7 +106,7 @@ export async function GET(
     await supabaseServer
       .from('scans')
       .update({ status: 'error' })
-      .eq('id', params.scanId);
+      .eq('id', scanId);
       
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
