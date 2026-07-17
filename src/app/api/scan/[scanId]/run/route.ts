@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
 import { checkSSL } from '@/lib/checks/ssl';
 import { checkHeaders } from '@/lib/checks/headers';
 import { checkDNS } from '@/lib/checks/dns';
@@ -9,7 +9,7 @@ import { calculateScore, getGradeFromScore } from '@/lib/scoring';
 
 export async function GET(
   request: Request,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> }
 ) {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -19,10 +19,10 @@ export async function GET(
       );
     }
 
-    const { scanId } = params;
+    const { scanId } = await params;
 
     // 1. Fetch scan
-    const { data: scan, error: fetchError } = await supabase
+    const { data: scan, error: fetchError } = await supabaseServer
       .from('scans')
       .select('url, status')
       .eq('id', scanId)
@@ -37,7 +37,7 @@ export async function GET(
     }
 
     // 2. Mark as running
-    await supabase
+    await supabaseServer
       .from('scans')
       .update({ status: 'running' })
       .eq('id', scanId);
@@ -77,7 +77,7 @@ export async function GET(
     }));
 
     if (findingsToInsert.length > 0) {
-      const { error: findingsError } = await supabase
+      const { error: findingsError } = await supabaseServer
         .from('findings')
         .insert(findingsToInsert);
         
@@ -87,17 +87,24 @@ export async function GET(
     }
 
     // 6. Mark as complete
-    await supabase
+    console.log(`Setting scan ${scanId} to complete with grade ${grade}`);
+    const { error: updateError } = await supabaseServer
       .from('scans')
       .update({ status: 'complete', grade })
       .eq('id', scanId);
+
+    if (updateError) {
+      console.error('Failed to update scan status to complete:', updateError);
+    } else {
+      console.log(`Successfully updated scan ${scanId} to complete`);
+    }
 
     return NextResponse.json({ success: true, grade, findingsCount: allFindings.length });
 
   } catch (error: any) {
     console.error('Run scan error:', error);
     // Mark as error
-    await supabase
+    await supabaseServer
       .from('scans')
       .update({ status: 'error' })
       .eq('id', params.scanId);

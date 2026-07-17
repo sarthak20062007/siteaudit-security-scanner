@@ -74,7 +74,7 @@ export default function ResultsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [leadSuccess, setLeadSuccess] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['scanResults', scanId],
     queryFn: async () => {
       const res = await fetch(`/api/scan/${scanId}/results`);
@@ -101,11 +101,24 @@ export default function ResultsPage() {
     }
   };
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
        <div className="min-h-screen flex items-center justify-center bg-surface-container-lowest">
          <Loader2 className="animate-spin text-primary" size={40} />
        </div>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-surface-container-lowest text-center p-6">
+        <AlertTriangle className="text-error mb-4" size={48} />
+        <h2 className="text-2xl font-bold mb-2 text-on-surface">Failed to load results</h2>
+        <p className="text-on-surface-variant max-w-md">{error instanceof Error ? error.message : 'Unknown error occurred.'}</p>
+        <Link href="/" className="mt-6 px-6 py-2 bg-primary-container text-on-primary-container rounded-full hover:brightness-110">
+          Try Again
+        </Link>
+      </div>
     );
   }
 

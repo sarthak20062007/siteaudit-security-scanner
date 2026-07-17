@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 
 export async function GET(
   request: Request,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> }
 ) {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -13,7 +13,7 @@ export async function GET(
       );
     }
 
-    const { scanId } = params;
+    const { scanId } = await params;
     
     // In production, this would be the actual deployed URL.
     // We get the origin from the incoming request.
@@ -47,10 +47,11 @@ export async function GET(
 
     await browser.close();
 
-    return new NextResponse(pdfBuffer, {
+    return new Response(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="SiteAudit_Report_${scanId.substring(0, 8)}.pdf"`
+        'Content-Disposition': `attachment; filename="SiteAudit_Report_${scanId.substring(0, 8)}.pdf"`,
+        'Content-Length': pdfBuffer.length.toString()
       }
     });
 

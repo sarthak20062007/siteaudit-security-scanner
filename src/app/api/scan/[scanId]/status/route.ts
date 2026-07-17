@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> }
 ) {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -13,9 +13,9 @@ export async function GET(
       );
     }
 
-    const { scanId } = params;
+    const { scanId } = await params;
 
-    const { data: scan, error } = await supabase
+    const { data: scan, error } = await supabaseServer
       .from('scans')
       .select('status')
       .eq('id', scanId)

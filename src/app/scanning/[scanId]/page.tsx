@@ -62,8 +62,14 @@ export default function ScanningPage() {
       if (!res.ok) throw new Error('Failed to fetch status');
       return res.json();
     },
-    refetchInterval: (query) => (query.state.data?.status === 'complete' || query.state.data?.status === 'error') ? false : 1500,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      console.log('Polling status:', status, query.state.data);
+      return (status === 'complete' || status === 'error') ? false : 1500;
+    },
   });
+
+  console.log('Current statusData in render:', statusData);
 
   // Redirect when complete
   useEffect(() => {

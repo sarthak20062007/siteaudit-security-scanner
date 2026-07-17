@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
 import { z } from 'zod';
 import { checkRateLimit } from '@/lib/rate-limit';
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     // Create scan in database
-    const { data, error } = await supabase
+    const { data, error } = await supabaseServer
       .from('scans')
       .insert([
         { url: result.data.url, status: 'pending' }
@@ -48,7 +48,12 @@ export async function POST(request: Request) {
       .single();
 
     if (error || !data) {
-      console.error('Supabase error:', error);
+      console.error('Supabase error details:', error ? {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      } : 'No error, just no data');
       return NextResponse.json({ error: 'Failed to initialize scan in database' }, { status: 500 });
     }
 

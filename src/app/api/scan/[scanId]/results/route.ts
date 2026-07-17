@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase-server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> }
 ) {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -13,9 +13,9 @@ export async function GET(
       );
     }
 
-    const { scanId } = params;
+    const { scanId } = await params;
 
-    const { data: scan, error: scanError } = await supabase
+    const { data: scan, error: scanError } = await supabaseServer
       .from('scans')
       .select('url, grade, created_at')
       .eq('id', scanId)
@@ -25,7 +25,7 @@ export async function GET(
       return NextResponse.json({ error: 'Scan not found' }, { status: 404 });
     }
 
-    const { data: findings, error: findingsError } = await supabase
+    const { data: findings, error: findingsError } = await supabaseServer
       .from('findings')
       .select('id, type, severity, title, description, evidence')
       .eq('scan_id', scanId);
